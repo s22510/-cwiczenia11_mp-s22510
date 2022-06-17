@@ -1,0 +1,127 @@
+﻿@page "/students" 
+@inject IStudentService StudentService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime js
+
+<h3>Students</h3>
+
+<table id="students">
+    <thead>
+        <tr>
+            <th>Avatar</th>
+            <th>
+                <button @onclick="@(() => orderBy("fname"))">First name</button>
+            </th>
+            
+            <th>
+                <button @onclick="@(() => orderBy("lname"))">Last name</button>
+            </th>
+            
+            <th>
+                <button @onclick="@(() => orderBy("birthdate"))">Birthdate</button>
+            </th>
+            
+            <th>
+                <button @onclick="@(() => orderBy("studies"))">Studies</button>
+            </th>
+
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var stud in StudentsList)
+        {
+        <tr>
+            <td><img src="@stud.Avatar" alt="@stud.FirstName @stud.LastName Avatar" /></td>
+            <td>@stud.FirstName</td>
+            <td>@stud.LastName</td>
+            <td>@stud.BirthDate</td>
+            <td>@stud.Studies</td>
+            <td>
+                <button @onclick="@(() => OpenDetails(stud.IdStudent))">Open details</button>
+                <button @onclick="@(() => Delete(stud.IdStudent))">Delete</button>
+            </td>
+        </tr>
+        }
+            @if (10 - StudentsList.ToArray().Length > 0)
+            {
+               @for(int i=0;i<10 - StudentsList.ToArray().Length;i++){
+                   <tr>
+                       <td> </td>
+                       <td> </td>
+                       <td> </td>
+                       <td> </td>
+                       <td> </td>
+                       <td> </td>
+                   </tr>
+               } 
+            }
+          
+    </tbody>
+</table>
+
+
+
+@code {
+    public IEnumerable<Student> StudentsList { get; set; }
+    public string Lastorder = "";
+    protected override void OnInitialized()
+    {
+        StudentsList = StudentService.GetStudents();
+    }
+
+    private void OpenDetails(int id)
+    {
+        NavigationManager.NavigateTo($"/students/{id}");
+    }
+
+    private async Task Delete(int id)
+    {
+        if(await js.InvokeAsync<bool>("confirm", "Are you sure?"))
+        {
+            StudentService.DeleteStudent(id);
+        }
+    }
+    
+    private void orderBy(string parametr)
+    {
+        IEnumerable<Student> LastStudentsList = StudentsList;
+        switch (parametr)
+        {
+            case "fname":
+                StudentsList = StudentsList.OrderBy(a => a.FirstName);
+                break;
+            case "lname":
+                StudentsList = StudentsList.OrderBy(a => a.LastName);
+                break;
+            case "birthdate":
+                StudentsList = StudentsList.OrderBy(a => a.BirthDate);
+                break;
+            case "studies":
+                StudentsList = StudentsList.OrderBy(a => a.Studies);
+                break;
+        }
+        
+        if (checkIfTheSame(LastStudentsList,StudentsList) && Lastorder==parametr)
+        {
+            StudentsList = StudentsList.Reverse();
+        }
+        Lastorder = parametr;
+    }
+
+    private bool checkIfTheSame(IEnumerable<Student> lastStudentsList, IEnumerable<Student> studentsList)
+    {
+        List<Student> l1 = lastStudentsList.ToList();
+        List<Student> l2 = studentsList.ToList();
+        
+        for (int i = 0; i < l1.Count; i++)
+        {
+            if (!l1[i].get().Equals(l2[i].get()))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+}

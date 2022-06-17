@@ -1,0 +1,18 @@
+﻿table {
+    width: 100%;
+}
+
+img {
+    width: 64px;
+    height: 64px;
+}
+
+table, td, th {
+    border: 1px solid;
+    height: 67px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}

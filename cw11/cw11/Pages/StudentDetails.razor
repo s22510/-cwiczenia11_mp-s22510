@@ -1,0 +1,50 @@
+﻿@page "/students/{ID:int}" 
+@inject IStudentService StudentService
+
+<h3>StudentDetails</h3>
+<div ID="all">
+    <div ID="in">
+        <form>
+            <label for="fname">First name:</label>
+            <input type="text" id="fname" name="fname" value="@StudentsList.First(s => s.IdStudent == ID).FirstName" disabled><br><br>
+            
+            <label for="lname">Last name:</label>
+            <input type="text" id="lname" name="lname" value="@StudentsList.First(s => s.IdStudent == ID).LastName" disabled><br><br>
+            
+            <label for="birthdate">Birthdate:</label>
+            <input type="text" id="birthdate" name="birthdate" value="@StudentsList.First(s => s.IdStudent == ID).BirthDate" disabled><br><br>
+            
+            <label for="studies">Studies:</label>
+            <input type="text" id="studies" name="studies" value="@StudentsList.First(s => s.IdStudent == ID).Studies" disabled><br><br>
+            
+            <button type="reset" onclick="window.history.back()">Return</button>
+        </form>
+    </div>
+    <div ID="in">
+        <form>
+            <label for="avatar">Avatar:</label>
+            <input type="text" id="avatar" name="avatar" value="@StudentsList.First(s => s.IdStudent == ID).Avatar" disabled><br><br>
+            <img src="@StudentsList.First(s => s.IdStudent == ID).Avatar" alt="Avatar"/>
+        </form>
+    </div>
+</div>
+
+
+
+
+@code {
+    public IEnumerable<Student> StudentsList { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        StudentsList = StudentService.GetStudents();
+    }
+    
+    [Parameter]
+    public int ID { get; set; }
+    [Parameter]
+    public int FirstName { get; set; }
+   [Parameter]
+   public int LastName { get; set; }
+
+}
